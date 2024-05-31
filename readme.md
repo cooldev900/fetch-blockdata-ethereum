@@ -1,8 +1,8 @@
 ## How to run
 
 ```
-pnpm exec ts-node index.ts
-```
+pnpm install
+pnpm exec ts-node index.ts```
 
 ## Transaction Example Data
 

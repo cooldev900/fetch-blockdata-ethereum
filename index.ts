@@ -11,7 +11,10 @@ provider.on("block", (blockNumber) => {
 
     // Get block data for the new block
     provider.getBlock(blockNumber).then((block) => {
-        if (block) getLatestBlockTransactions(block)
+        if (block) {
+            getLatestBlockTransactions(block); 
+            // checkTypeOfTransactions(block)
+        }
     }).catch((error) => {
         console.error("Error getting block data:", error);
     });
@@ -31,7 +34,7 @@ async function getLatestBlockTransactions(latestBlock: ethers.Block) {
 
         // Fetch all transactions in the latest block
         const tx = await provider.getTransaction(latestBlock.transactions[0]);
-        console.log({tx: JSON.stringify(tx)})
+        console.log({ tx: JSON.stringify(tx) })
         if (tx) {
             console.log("Transaction Hash:", tx.hash);
             console.log("From:", tx.from);
@@ -42,7 +45,23 @@ async function getLatestBlockTransactions(latestBlock: ethers.Block) {
             console.log("Data:", tx.data);
             console.log("---------");
         }
+        console.log(await provider.getTransaction(latestBlock.transactions[Math.floor(latestBlock.transactions.length/2)]));
+        console.log(await provider.getTransaction(latestBlock.transactions[-1]));
     } catch (error) {
         console.error("Error fetching transactions from the latest block:", error);
     }
+}
+
+
+//ToDo: Check the _type values in Transactions
+async function checkTypeOfTransactions(block: ethers.Block) {
+    block.transactions.map(async (txHash) => {
+        try {
+            const data = await provider.getTransaction(txHash);
+            // @ts-ignore
+            console.log(`Transaction ${txHash}: ${data ? data['_type'] : 'empty'}`)
+        } catch (e) {
+            console.log(`check type error: ${txHash}`)
+        }
+    })
 }
